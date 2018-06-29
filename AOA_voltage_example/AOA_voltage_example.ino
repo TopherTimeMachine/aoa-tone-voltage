@@ -12,6 +12,8 @@
 // Output serial debug infomation. (comment out the following line to turn off serial debug output)
 #define SHOW_SERIAL_DEBUG 
 
+#define LOOP_DELAY_MILLISECONDS 100  // apply a small delay betwen voltage samples.
+
 // set Freq of callback function used to create the pulse tones.
 #define FREQ_OF_FUNCTION      100
 
@@ -95,6 +97,22 @@ void setup() {
 
 }
 
+// main loop of app
+void loop() {
+  //read in AOA analog voltage value.
+  AOA = analogRead(ANALOG_IN_PIN);  // reads in value  0 to 1023
+
+// if there is a delay then delay for a bit before displaying aoa values.
+#ifdef LOOP_DELAY_MILLISECONDS
+  delay(LOOP_DELAY_MILLISECONDS);
+#endif
+
+  // run the function that checks AOA value and plays the tones.
+  checkAOA();
+}
+
+
+
 // We use our own counter for how often we should pause between tones (pulses per sec PPS)
 int cycleCounter = 0;
 int cycleCounterResetAt = FREQ_OF_FUNCTION;
@@ -148,21 +166,12 @@ void tonePlayHandler(){
 }
 
 void checkAOA() {
-  /*
-  if(ASI <= MUTE_AUDIO_UNDER_IAS) {
-#ifdef SHOW_SERIAL_DEBUG    
-  // show audio muted and debug info.
-  sprintf(tempBuf, "AUDIO MUTED: Airspeed to low. Min:%i ASI:%i",MUTE_AUDIO_UNDER_IAS, ASI);
-  Serial.println(tempBuf);
-  toneMode = TONE_OFF;
-  return;
-#endif
-  }
-  */
   
-  if(lastAOA == AOA) {
-    return; // skip this if the AOA value has not changed.
-  }
+  Serial.print(AOA);  // output to serial 
+  
+  //if(lastAOA == AOA) {
+  //  return; // skip this if the AOA value has not changed.
+  //}
   
   // check AOA value and set tone and pauses between tones according to 
   if(AOA >= HIGH_TONE_AOA_STALL) {
@@ -170,6 +179,10 @@ void checkAOA() {
     highTone = true;
     setPPSTone(HIGH_TONE_STALL_PPS);
     toneMode = PULSE_TONE;
+#ifdef SHOW_SERIAL_DEBUG
+  Serial.println(" > HIGH_TONE_AOA_STALL");
+#endif
+
   } else if(AOA >= HIGH_TONE_AOA_START) {
     // play HIGH tone at Pulse Rate 1.5 PPS to 6.2 PPS (depending on AOA value)
     highTone = true;
@@ -180,10 +193,16 @@ void checkAOA() {
     NewRange = HIGH_TONE_PPS_MAX - HIGH_TONE_PPS_MIN; // (NewMax - NewMin)  
     NewValue = (((OldValue - 1) * NewRange) / OldRange) + HIGH_TONE_PPS_MIN; //(((OldValue - OldMin) * NewRange) / OldRange) + NewMin
     setPPSTone(NewValue);
+#ifdef SHOW_SERIAL_DEBUG
+  Serial.println(" > HIGH_TONE_AOA_START");
+#endif
   } else if(AOA >= LOW_TONE_AOA_SOLID) {
     // play a steady LOW tone
     highTone = false;
     toneMode = SOLID_TONE;
+#ifdef SHOW_SERIAL_DEBUG    
+  Serial.println(" > LOW_TONE_AOA_SOLID");
+#endif
   } else if(AOA > LOW_TONE_AOA_START) {
     toneMode = PULSE_TONE;
     highTone = false;
@@ -194,8 +213,14 @@ void checkAOA() {
     NewRange = LOW_TONE_PPS_MAX - LOW_TONE_PPS_MIN; // (NewMax - NewMin)  
     NewValue = (((OldValue - 1) * NewRange) / OldRange) + LOW_TONE_PPS_MAX; //(((OldValue - OldMin) * NewRange) / OldRange) + NewMin
     setPPSTone(NewValue);
+#ifdef SHOW_SERIAL_DEBUG    
+  Serial.println(" > LOW_TONE_AOA_START");
+#endif
   } else {
     toneMode = TONE_OFF;
+#ifdef SHOW_SERIAL_DEBUG    
+  Serial.println(" - NO TONE");
+#endif
   }
 
   lastAOA = AOA;
@@ -212,14 +237,6 @@ void setPPSTone(float newPPS) {
   pps = newPPS;  // store pps for debug purposes.
 }
 
-// main loop of app
-void loop() {
-
-  //read in AOA analog voltage value.
-  AOA = analogRead(ANALOG_IN_PIN);  // reads in value  0 to 1023
-  Serial.println(AOA);  // output to serial 
-  checkAOA();
-}
 
 
 void configureToneTimer() {
