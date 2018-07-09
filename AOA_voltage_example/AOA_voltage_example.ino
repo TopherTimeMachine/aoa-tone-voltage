@@ -1,9 +1,10 @@
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
 // AOA voltage example for OSH 2018
-// Christopher Jones 6/27/2018
+// Christopher Jones 7/9/2018
 //
-// 
+// Ver 1.0
+//
 
 #include <DueTimer.h>         // timer lib functions for using DUE timers and callbacks.
 #include <stdint.h>
@@ -20,13 +21,13 @@
   // AOA values & Tone Pulse Per Sec (PPS) 
   // these are voltage values.
   #define HIGH_TONE_STALL_PPS   20      // how many PPS to play during stall
-  #define HIGH_TONE_AOA_STALL   900     // voltage (and above) where stall happens.  (0 to 1023)
-  #define HIGH_TONE_AOA_START   800      // voltage (and above) where high tone starts (0 to 1023)
+  #define HIGH_TONE_AOA_STALL   920     // voltage (and above) where stall happens.  (0 to 1023)
+  #define HIGH_TONE_AOA_START   775      // voltage (and above) where high tone starts (0 to 1023)
   #define HIGH_TONE_PPS_MAX     6.5     // 6.5   
   #define HIGH_TONE_PPS_MIN     1.5     // 1.5
   #define HIGH_TONE_HZ          1600    // freq of high tone
   //#define HIGH_TONE2_HZ         1500    // a 2nd high tone that it will cycle between (if defined)
-  #define LOW_TONE_AOA_SOLID    500      // voltage (and above) where a solid low tone is played.  (0 to 1023)
+  #define LOW_TONE_AOA_SOLID    695      // voltage (and above) where a solid low tone is played.  (0 to 1023)
   #define LOW_TONE_AOA_START    400      // voltage (and above) where low beeps (0 to 1023)
   #define LOW_TONE_PPS_MAX      6.5
   #define LOW_TONE_PPS_MIN      0.5
@@ -189,7 +190,7 @@ void checkAOA() {
     OldValue = AOA-(HIGH_TONE_AOA_START-1);
     toneMode = PULSE_TONE;
     // scale number using this. http://stackoverflow.com/questions/929103/convert-a-number-range-to-another-range-maintaining-ratio
-    OldRange = 20 - 1;  //(OldMax - OldMin)  
+    OldRange = HIGH_TONE_AOA_STALL - HIGH_TONE_AOA_START;  //20 - 1;  //(OldMax - OldMin)  
     NewRange = HIGH_TONE_PPS_MAX - HIGH_TONE_PPS_MIN; // (NewMax - NewMin)  
     NewValue = (((OldValue - 1) * NewRange) / OldRange) + HIGH_TONE_PPS_MIN; //(((OldValue - OldMin) * NewRange) / OldRange) + NewMin
     setPPSTone(NewValue);
@@ -209,7 +210,7 @@ void checkAOA() {
     // play LOW tone at Pulse Rate 1.5 PPS to 8.2 PPS (depending on AOA value)
     // scale number using this. http://stackoverflow.com/questions/929103/convert-a-number-range-to-another-range-maintaining-ratio
     OldValue = AOA-LOW_TONE_AOA_START;
-    OldRange = 40 - 1;  //(OldMax - OldMin)  
+    OldRange = LOW_TONE_AOA_SOLID - LOW_TONE_AOA_START;  //40 - 1;  //(OldMax - OldMin)  
     NewRange = LOW_TONE_PPS_MAX - LOW_TONE_PPS_MIN; // (NewMax - NewMin)  
     NewValue = (((OldValue - 1) * NewRange) / OldRange) + LOW_TONE_PPS_MAX; //(((OldValue - OldMin) * NewRange) / OldRange) + NewMin
     setPPSTone(NewValue);
