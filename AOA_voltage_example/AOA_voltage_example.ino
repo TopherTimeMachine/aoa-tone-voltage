@@ -12,27 +12,25 @@
 
 // Output serial debug infomation. (comment out the following line to turn off serial debug output)
 #define SHOW_SERIAL_DEBUG 
-
 #define LOOP_DELAY_MILLISECONDS 100  // apply a small delay betwen voltage samples.
 
 // set Freq of callback function used to create the pulse tones.
 #define FREQ_OF_FUNCTION      100
 
-  // AOA values & Tone Pulse Per Sec (PPS) 
-  // these are voltage values.
-  #define HIGH_TONE_STALL_PPS   20      // how many PPS to play during stall
-  #define HIGH_TONE_AOA_STALL   920     // voltage (and above) where stall happens.  (0 to 1023)
-  #define HIGH_TONE_AOA_START   775      // voltage (and above) where high tone starts (0 to 1023)
-  #define HIGH_TONE_PPS_MAX     6.5     // 6.5   
-  #define HIGH_TONE_PPS_MIN     1.5     // 1.5
-  #define HIGH_TONE_HZ          1600    // freq of high tone
-  //#define HIGH_TONE2_HZ         1500    // a 2nd high tone that it will cycle between (if defined)
-  #define LOW_TONE_AOA_SOLID    695      // voltage (and above) where a solid low tone is played.  (0 to 1023)
-  #define LOW_TONE_AOA_START    400      // voltage (and above) where low beeps (0 to 1023)
-  #define LOW_TONE_PPS_MAX      6.5
-  #define LOW_TONE_PPS_MIN      0.5
-  #define LOW_TONE_HZ           400     // freq of low tone
-  #define BAUDRATE_EFIS         9600
+// AOA values & Tone Pulse Per Sec (PPS) 
+// these are voltage values (reads 0 to 1023 as the analog input on the arduino)
+#define HIGH_TONE_STALL_PPS   20      // how many PPS to play during stall
+#define HIGH_TONE_AOA_STALL   920     // voltage (and above) where stall happens.  (0 to 1023)
+#define HIGH_TONE_AOA_START   775      // voltage (and above) where high tone starts (0 to 1023)
+#define HIGH_TONE_PPS_MAX     6.5     // 6.5   
+#define HIGH_TONE_PPS_MIN     1.5     // 1.5
+#define HIGH_TONE_HZ          1600    // freq of high tone
+//#define HIGH_TONE2_HZ         1500    // a 2nd high tone that it will cycle between (if defined)
+#define LOW_TONE_AOA_SOLID    695      // voltage (and above) where a solid low tone is played.  (0 to 1023)
+#define LOW_TONE_AOA_START    400      // voltage (and above) where low beeps (0 to 1023)
+#define LOW_TONE_PPS_MAX      6.5
+#define LOW_TONE_PPS_MIN      0.5
+#define LOW_TONE_HZ           400     // freq of low tone
 
 #define ANALOG_IN_PIN         3
 #define TONE_PIN              2     // TIOA0
@@ -66,7 +64,6 @@ void setup() {
   pinMode(ANALOG_IN_PIN, INPUT);
 
   Serial.begin(115200);   //Init hardware serial port (ouput to computer for debug)
-
   configureToneTimer();   //setup timer used for tone
 
   digitalWrite(PIN_LED2, 1);
@@ -82,11 +79,11 @@ void setup() {
   delay(STARTUP_TONES_DELAY);
   setFrequencytone(1000);
   delay(STARTUP_TONES_DELAY);
-  setFrequencytone(800);
+  setFrequencytone(1200);
   delay(STARTUP_TONES_DELAY);
-  setFrequencytone(600);
+  setFrequencytone(1000);
   delay(STARTUP_TONES_DELAY);
-  setFrequencytone(400);
+  setFrequencytone(1200);
   delay(STARTUP_TONES_DELAY);
   setFrequencytone(0);
   digitalWrite(PIN_LED2, 0);
@@ -111,7 +108,6 @@ void loop() {
   // run the function that checks AOA value and plays the tones.
   checkAOA();
 }
-
 
 
 // We use our own counter for how often we should pause between tones (pulses per sec PPS)
