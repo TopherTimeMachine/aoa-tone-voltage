@@ -3,8 +3,9 @@
 // AOA voltage example for OSH 2018
 // Christopher Jones 7/9/2018
 //
-// Ver 1.0
+// Ver 1.1
 //
+// 9/2/2018 1.1 fix for LOW_TONE_PPS_MIN in low tone.  PPS was wrong, should be fixed now.
 
 #include <DueTimer.h>         // timer lib functions for using DUE timers and callbacks.
 #include <stdint.h>
@@ -208,7 +209,7 @@ void checkAOA() {
     OldValue = AOA-LOW_TONE_AOA_START;
     OldRange = LOW_TONE_AOA_SOLID - LOW_TONE_AOA_START;  //40 - 1;  //(OldMax - OldMin)  
     NewRange = LOW_TONE_PPS_MAX - LOW_TONE_PPS_MIN; // (NewMax - NewMin)  
-    NewValue = (((OldValue - 1) * NewRange) / OldRange) + LOW_TONE_PPS_MAX; //(((OldValue - OldMin) * NewRange) / OldRange) + NewMin
+    NewValue = (((OldValue - 1) * NewRange) / OldRange) + LOW_TONE_PPS_MIN; //(((OldValue - OldMin) * NewRange) / OldRange) + NewMin
     setPPSTone(NewValue);
 #ifdef SHOW_SERIAL_DEBUG    
   Serial.println(" > LOW_TONE_AOA_START");
